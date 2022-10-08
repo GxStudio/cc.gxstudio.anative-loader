@@ -7,8 +7,10 @@ import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.event.GlobalEventChannel
 import net.mamoe.mirai.event.events.BotLeaveEvent
 import net.mamoe.mirai.event.events.BotOnlineEvent
+import net.mamoe.mirai.utils.error
 import org.yaml.snakeyaml.Yaml
 import java.io.File
+import java.lang.Thread.sleep
 import java.nio.file.Paths
 
 
@@ -45,11 +47,14 @@ object PluginMain : KotlinPlugin(
     }
                                 ) {
     override fun onEnable() {
+        
+        
         val file = File("${PluginMain.dataFolder}/AnotherMiraiNative.exe")
-            if (!file.exists()) file.writeBytes(
-                javaClass.getResource("/anothernativefiles/AnotherMiraiNative.exe")
-                    .readBytes()
-                       )
+        if (!file.exists()) file.writeBytes(
+            javaClass.getResource("/another-mirai-native-release/AnotherMiraiNative.exe")
+                .readBytes()
+                                           )
+        
         val eventchannel = GlobalEventChannel.parentScope(this)
         eventchannel.subscribeAlways<BotOnlineEvent> {
             
@@ -61,13 +66,13 @@ object PluginMain : KotlinPlugin(
                 .load(File("config/net.mamoe.mirai-api-http/setting.yml").reader())
                 as Map<String, Any>
             val keys = objectMap["verifyKey"] as String
-            val ws = (objectMap["adapterSettings"] as LinkedHashMap<String,LinkedHashMap<String,Any>>)["ws"]
-            val wshost = (ws!!.get("host")as String)
-            val wsport= (ws!!.get("port")as Int).toString()
+            val ws = (objectMap["adapterSettings"] as LinkedHashMap<String, LinkedHashMap<String, Any>>)["ws"]
+            val wshost = (ws!!.get("host") as String)
+            val wsport = (ws!!.get("port") as Int).toString()
             delay(1000)
             Plugindata.reload()
-            val ProcessBuilder = ProcessBuilder()
-                .command(
+            val ProcessBuilder = ProcessBuilder().apply{
+                command(
                     "${PluginMain.dataFolder}\\AnotherMiraiNative.exe",
                     "-i",
                     "-q",
@@ -76,9 +81,11 @@ object PluginMain : KotlinPlugin(
                     "\"ws://$wshost:$wsport\"",
                     "-wsk",
                     "$keys"
-                        )
-                .directory(File("${PluginMain.dataFolder}"))
-                .start()
+                       )
+                directory(File("${PluginMain.dataFolder}"))
+            }
+            
+            ProcessBuilder.start()
         }
         eventchannel.subscribeAlways<BotLeaveEvent> { }
         

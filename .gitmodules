@@ -1,0 +1,6 @@
+[submodule "src/main/resources/anothernativefiles/another-mirai-native-release"]
+	path = src/main/resources/anothernativefiles/another-mirai-native-release
+	url = https://github.com/debumori-osc/another-mirai-native-release
+[submodule "src/main/resources/another-mirai-native-release"]
+	path = src/main/resources/another-mirai-native-release
+	url = https://github.com/debumori-osc/another-mirai-native-release
